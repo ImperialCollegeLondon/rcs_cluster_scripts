@@ -1,0 +1,35 @@
+#!/bin/bash
+
+shopt -s extglob
+
+name_only="false"
+
+exe_name=$(basename "$0")
+
+while getopts nh o
+do	case "$o" in
+	n)	name_only="true";;
+	h)	echo >&2 "Usage: $exe_name [-n] LOG_TYPE [PREFIX]"
+		echo >&2 "Use -n to only print file name instead of openning in pager"
+		exit 1;;
+	*)      echo >&2 "Unknown flag: $o"
+	esac
+done
+
+shift $(( OPTIND-1 ))
+
+JOBLOG_GLOB="*.$1+([0-9])?(.+([0-9]))"
+filename=$(ls -Art "$2"$JOBLOG_GLOB | tail -n 1)
+
+if [ -z "$filename" ]
+then
+    echo "No log files found"
+    exit 1
+fi
+
+if [ "$name_only" == "true" ]
+then
+    echo "$filename"
+else
+    less "$filename"
+fi

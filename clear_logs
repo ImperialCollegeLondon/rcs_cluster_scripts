@@ -1,0 +1,35 @@
+#!/bin/bash
+
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]
+then
+    echo "Usage: clear_logs [PREFIX]"
+    echo
+    echo "Delete pbs log files in current directory"
+    echo "Optionally limit to files starting with PREFIX"
+    exit
+fi
+
+JOBLOG_REGEX="\./${1}.*\.[oe][0-9]+(\.[0-9]+)?"
+
+# Save file names to array, the below is robust w.r.t filenames
+# containing spaces and newlines
+# 
+# Command substitution removes null characters so process substitution
+# is used with file names saved to an array.
+files=()
+while IFS=  read -r -d $'\0' name; do
+    files+=("$name")
+done < <(find . -mindepth 1 -maxdepth 1 -regextype posix-extended -regex "$JOBLOG_REGEX" -print0 | sort --zero-terminated)
+
+echo "About to remove:"
+for file in "${files[@]}"
+do
+    echo $file
+done
+echo "Proceed? (y/n)"
+read -r proceed
+
+if [ "$proceed" == "y" ]
+then
+    printf "%s\0" "${files[@]}" | xargs -0 rm
+fi
