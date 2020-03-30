@@ -16,3 +16,5 @@ make sure they have execution permissions.
   * I usually create the below aliases
     * `alias llo="latest_log o"`
     * `alias lle="latest_log e"`
+* qdel_last
+  * Delete the most recently submitted job from the queue

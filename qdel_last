@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+from datetime import datetime
+import json
+import subprocess
+
+TIME_FORMAT = "%a %b %d %X %Y"
+
+def qstat():
+    stdout = subprocess.run(
+        "qstat -f -F json".split(),
+        check=True,
+        stdout=subprocess.PIPE,
+    ).stdout
+    
+    return json.loads(stdout)['Jobs']
+
+def qdel(jobid):
+    subprocess.run(
+        "qdel {}".format(jobid).split()
+    )
+    
+jobs = qstat()
+submission_times = {
+    datetime.strptime(jobs[jid]["qtime"], TIME_FORMAT):
+    jid for jid in jobs
+}
+latest_job_id = submission_times[sorted(submission_times)[-1]]
+
+print("About to delete: {} {}".format(latest_job_id,
+                                      jobs[latest_job_id]["Job_Name"]))
+if jobs[latest_job_id]["job_state"] == "R":
+    print("Job is running!")
+print("Proceed? (y/n)")
+proceed = input()
+
+if proceed == "y":
+    qdel(latest_job_id)
+
