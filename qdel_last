@@ -5,20 +5,23 @@ import subprocess
 
 TIME_FORMAT = "%a %b %d %X %Y"
 
+
 def qstat():
     stdout = subprocess.run(
         "qstat -f -F json".split(),
         check=True,
         stdout=subprocess.PIPE,
     ).stdout
-    
+
     return json.loads(stdout)['Jobs']
+
 
 def qdel(jobid):
     subprocess.run(
         "qdel {}".format(jobid).split()
     )
-    
+
+
 jobs = qstat()
 submission_times = {
     datetime.strptime(jobs[jid]["qtime"], TIME_FORMAT):
@@ -35,4 +38,3 @@ proceed = input()
 
 if proceed == "y":
     qdel(latest_job_id)
-
