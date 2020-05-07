@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+import json
+import subprocess
+
+
+def qstat():
+    stdout = subprocess.run(
+        "qstat -f -F json".split(),
+        check=True,
+        stdout=subprocess.PIPE,
+    ).stdout
+
+    return json.loads(stdout)['Jobs']
+
+
+def qdel(jobid):
+    subprocess.run(
+        "qdel {}".format(jobid).split(),
+        check=True
+    )
+
+
+try:
+    jobs = qstat()
+except KeyError:
+    raise Exception("No jobs in your queue")
+
+print("About to delete {} jobs".format(len(jobs)))
+print("Proceed? (y/n)")
+proceed = input()
+
+if proceed == "y":
+    for jobid in jobs:
+        qdel(jobid)
