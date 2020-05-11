@@ -6,17 +6,28 @@ name_only="false"
 
 exe_name=$(basename "$0")
 
+usage () {
+    echo >&2 "Usage: $exe_name [-n] LOG_TYPE [PREFIX]"
+    echo >&2 "Where LOG_TYPE is one of 'o' or 'e'"
+    echo >&2 "Use -n to only print file name instead of opening in pager"
+}
+
 while getopts nh o
 do	case "$o" in
 	n)	name_only="true";;
-	h)	echo >&2 "Usage: $exe_name [-n] LOG_TYPE [PREFIX]"
-		echo >&2 "Use -n to only print file name instead of openning in pager"
+	h)	usage
 		exit 1;;
 	*)      echo >&2 "Unknown flag: $o"
 	esac
 done
 
 shift $(( OPTIND-1 ))
+
+if [ "$#" -eq 0 ]
+then
+    usage
+    exit 1
+fi
 
 JOBLOG_GLOB="*.$1+([0-9])?(.+([0-9]))"
 filename=$(ls -Art "$2"$JOBLOG_GLOB | tail -n 1)
