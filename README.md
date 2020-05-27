@@ -6,17 +6,17 @@ make sure they have execution permissions.
 
 ## Script list
 
-* clear_logs
+* `clear_logs`
   * Delete job log (.o and .e) files from the current directory
   * Provide an argument to limit this to files with a given prefix
-* latest_log
+* `latest_log`
   * Open the most recent job log file in the current directory with `less`
   * Specify either o or e log files as the first argument
   * Provide a second argument to limit this to files with a given prefix
   * I usually create the below aliases
     * `alias llo="latest_log o"`
     * `alias lle="latest_log e"`
-* qdel_all
+* `qdel_all`
   * Delete all jobs in the queue regardless of their status
-* qdel_last
+* `qdel_last`
   * Delete the most recently submitted job from the queue
